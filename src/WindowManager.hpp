@@ -11,7 +11,7 @@ class ILayout;
 
 class WindowManager {
 public:
-	static WindowManager& Instance();
+	static std::shared_ptr<WindowManager> WindowManager::Instance();
 
 	static void quit(const Arg* args);
 	static void restart(const Arg* args);
@@ -19,18 +19,17 @@ public:
 
 	void          Run();
 	bool          NeedRestart()  const;
-	ConnectionPtr GetConnection() const;
-	Window        GetRootWindow() const;
 
 	~WindowManager();
 
 private:
-	WindowManager();
+	WindowManager(Display* display);
 	WindowManager(const WindowManager& other)       = delete;
 	WindowManager(const WindowManager&& other)      = delete;
 	WindowManager& operator=(const WindowManager&) = delete;
 
+	static std::shared_ptr<WindowManager> _self;
 
-	bool                    _needRestart;
-	bool                    _exit;
+	bool                          _needRestart;
+	bool                          _exit;
 };

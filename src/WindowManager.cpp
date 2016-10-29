@@ -5,19 +5,25 @@
 #include <stdexcept>
 #include <unistd.h>
 
+std::shared_ptr<WindowManager> WindowManager::_self = nullptr;
 
-WindowManager& WindowManager::Instance() {
-	static WindowManager instance;
-	return instance;
+std::shared_ptr<WindowManager> WindowManager::Instance() {
+	if (!_self) {
+		Display* display = XOpenDisplay(nullptr);
+		if (!display)
+			throw
+		_self = std::make_shared<WindowManager>(display);
+	}
+	return _self;
 }
 
 void WindowManager::quit(const Arg* args) {
-	Instance()._exit = true;
+	Instance()->_exit = true;
 }
 
 void WindowManager::restart(const Arg* args) {
-	Instance()._needRestart = true;
-	Instance()._exit = true;
+	Instance()->_needRestart = true;
+	Instance()->_exit = true;
 }
 
 void WindowManager::spawn(const Arg* args) {
@@ -31,105 +37,17 @@ void WindowManager::spawn(const Arg* args) {
 }
 
 void WindowManager::Run() {
-	xcb_flush (_connection);
-	while (GenericEventPtr event = xcb_wait_for_event(_connection)) {
-		switch (event->response_type & ~0x80) {
-			case XCB_KEY_PRESS: {
-				printf("Key press event\n");
-				KeyPressEventPtr ev = (KeyPressEventPtr)event;
-				for (u32 i = 0; i < sizeof(hotkeys); ++i) {
-					if (ev->detail == hotkeys[i].key && ev->state == hotkeys[i].mode) {
-						hotkeys[i].func(&hotkeys[i].args);
-						break;
-					}
-				}
-				break;
-			}
-			case XCB_KEY_RELEASE: {
-				printf("Key press event\n");
-				KeyReleaseEventPtr ev = (KeyReleaseEventPtr)event;
-				break;
-			}
-			case XCB_BUTTON_PRESS: {
-				printf("Button press event\n");
-				ButtonPressEventPtr buttonPress = (ButtonPressEventPtr)event;
-				break;
-			}
-			case XCB_BUTTON_RELEASE: {
-				printf("Button release event\n");
-				ButtonReleaseEventPtr buttonRelease = (ButtonReleaseEventPtr)event;
-				break;
-			}
-			case XCB_MOTION_NOTIFY: {
-				printf("Motion notify event\n");
-				MotionNotifyEventPtr MotionNotify = (MotionNotifyEventPtr)event;
-				break;
-			}
-			case XCB_ENTER_NOTIFY: {
-				printf("Enter notify event\n");
-				EnterNotifyEventPtr ev = (EnterNotifyEventPtr)event;
-				break;
-			}
-			case XCB_LEAVE_NOTIFY: {
-				printf("Leave notify event\n");
-				LeaveNotifyEventPtr ev = (LeaveNotifyEventPtr)event;
-				break;
-			}
-			case XCB_EXPOSE: {
-				printf("Expose event\n");
-				ExposeEventPtr expose = (ExposeEventPtr)event;
-				break;
-			}
-			case XCB_CREATE_NOTIFY: {
-				printf("Create notify event\n");
-				CreateNotifyEventPtr ev = (CreateNotifyEventPtr)event;
-				break;
-			}
-			case XCB_CONFIGURE_NOTIFY: {
-				printf("Configure notify event\n");
-				ConfigureNotifyEventPtr ev = (ConfigureNotifyEventPtr)event;
-				break;
-			}
-			default:
-				printf("Unknown event: %d\n", event->response_type);
-				break;
-		}
-		free(event);
-
-		if (_exit)
-			break;
-	}
 }
 
 bool WindowManager::NeedRestart() const {
 	return _needRestart;
 }
 
-ConnectionPtr WindowManager::GetConnection() const {
-	return _connection;
-}
-
-Window WindowManager::GetRootWindow() const {
-	return _rootScreen->root;
-}
-
 WindowManager::~WindowManager() {
-	xcb_disconnect(_connection);
 }
 
-WindowManager::WindowManager()
+WindowManager::WindowManager(Display* display)
 		:_needRestart(false)
-		,_exit(false)
-		,_layout(std::make_unique<TilingLayout>()) {
-	_connection = xcb_connect(nullptr, nullptr);
-	if (xcb_connection_has_error(_connection)) {
-		throw std::logic_error("Couldn't open display");
-	}
-	_rootScreen = xcb_setup_roots_iterator(xcb_get_setup(_connection)).data;
-	u32 mask = XCB_CW_EVENT_MASK;
-	u32 values[] = { XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY };
+		,_exit(false) {
 
-	if (xcb_request_check(_connection, xcb_change_window_attributes_checked(_connection, _rootScreen->root, mask, values))) {
-		throw std::logic_error("Another window manager is already running");
-	}
 }
