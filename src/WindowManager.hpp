@@ -1,7 +1,7 @@
 #pragma once
 
 extern "C" {
-#include <xcb/xcb.h>
+#include <X11/Xlib.h>
 }
 
 #include <memory>
@@ -31,13 +31,6 @@ private:
 	WindowManager& operator=(const WindowManager&) = delete;
 
 
-	bool             _needRestart;
-	bool             _exit;
-
-	std::unique_ptr<ILayout> _layout;
-
-	ConnectionPtr     _connection;
-	int               _screenNumber;
-	ScreenPtr         _rootScreen;
-
+	bool                    _needRestart;
+	bool                    _exit;
 };
