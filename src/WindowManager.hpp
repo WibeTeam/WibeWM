@@ -11,7 +11,7 @@ class ILayout;
 
 class WindowManager {
 public:
-	static std::shared_ptr<WindowManager> WindowManager::Instance();
+	static std::shared_ptr<WindowManager> Instance();
 
 	static void quit(const Arg* args);
 	static void restart(const Arg* args);

@@ -11,8 +11,8 @@ std::shared_ptr<WindowManager> WindowManager::Instance() {
 	if (!_self) {
 		Display* display = XOpenDisplay(nullptr);
 		if (!display)
-			throw
-		_self = std::make_shared<WindowManager>(display);
+			return nullptr;
+		_self = std::shared_ptr<WindowManager>(new WindowManager(display));
 	}
 	return _self;
 }
