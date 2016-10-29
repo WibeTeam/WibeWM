@@ -125,3 +125,11 @@ WindowManager::WindowManager()
 		throw std::logic_error("Another window manager is already running");
 	}
 }
+
+ConnectionPtr WindowManager::GetConnection() const {
+    return _connection;
+}
+
+Window WindowManager::GetRootWindow() const {
+    return _rootScreen->root;
+}

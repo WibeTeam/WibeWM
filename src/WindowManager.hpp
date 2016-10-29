@@ -22,6 +22,9 @@ public:
 
 	~WindowManager();
 
+    ConnectionPtr GetConnection() const;
+    Window        GetRootWindow() const;
+
 private:
 	WindowManager();
 	WindowManager(const WindowManager& other) = delete;
