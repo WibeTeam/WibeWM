@@ -105,6 +105,14 @@ bool WindowManager::NeedRestart() const {
 	return _needRestart;
 }
 
+ConnectionPtr WindowManager::GetConnection() const {
+	return _connection;
+}
+
+Window WindowManager::GetRootWindow() const {
+	return _rootScreen->root;
+}
+
 WindowManager::~WindowManager() {
 	xcb_disconnect(_connection);
 }
@@ -124,12 +132,4 @@ WindowManager::WindowManager()
 	if (xcb_request_check(_connection, xcb_change_window_attributes_checked(_connection, _rootScreen->root, mask, values))) {
 		throw std::logic_error("Another window manager is already running");
 	}
-}
-
-ConnectionPtr WindowManager::GetConnection() const {
-    return _connection;
-}
-
-Window WindowManager::GetRootWindow() const {
-    return _rootScreen->root;
 }

@@ -12,23 +12,22 @@ class ILayout;
 class WindowManager {
 public:
 	static WindowManager& Instance();
-	
+
 	static void quit(const Arg* args);
 	static void restart(const Arg* args);
 	static void spawn(const Arg* args);
 
-	void Run();
-	bool NeedRestart() const;
+	void          Run();
+	bool          NeedRestart()  const;
+	ConnectionPtr GetConnection() const;
+	Window        GetRootWindow() const;
 
 	~WindowManager();
 
-    ConnectionPtr GetConnection() const;
-    Window        GetRootWindow() const;
-
 private:
 	WindowManager();
-	WindowManager(const WindowManager& other) = delete;
-	WindowManager(const WindowManager&& other) = delete;
+	WindowManager(const WindowManager& other)       = delete;
+	WindowManager(const WindowManager&& other)      = delete;
 	WindowManager& operator=(const WindowManager&) = delete;
 
 
