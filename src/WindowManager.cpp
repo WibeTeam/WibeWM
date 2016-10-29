@@ -8,36 +8,51 @@ WindowManager& WindowManager::Instance() {
 	static WindowManager instance;
 	return instance;
 }
+void WindowManager::exit() {
+	Instance()._exit = true;
+}
+
+void WindowManager::restart() {
+	Instance()._needRestart = true;
+	Instance()._exit = true;
+}
 
 void WindowManager::Run() {
 	xcb_flush (_connection);
 	while (GenericEventPtr event = xcb_wait_for_event(_connection)) {
 		switch (event->response_type & ~0x80) {
 			case XCB_EXPOSE: {
+				printf("Expose event\n");
 				ExposeEventPtr expose = (ExposeEventPtr) event;
 				break;
 			}
 			case XCB_BUTTON_PRESS: {
+				printf("Button press event\n");
 				ButtonPressEventPtr buttonPress = (ButtonPressEventPtr)event;
 				break;
 			}
 			case XCB_BUTTON_RELEASE: {
+				printf("Button release event\n");
 				ButtonReleaseEventPtr buttonRelease = (ButtonReleaseEventPtr)event;
 				break;
 			}
 			case XCB_MOTION_NOTIFY: {
+				printf("Motion notify event\n");
 				MotionNotifyEventPtr MotionNotify = (MotionNotifyEventPtr)event;
 				break;
 			}
 			case XCB_ENTER_NOTIFY: {
+				printf("Enter notify event\n");
 				EnterNotifyEventPtr ev = (EnterNotifyEventPtr)event;
 				break;
 			}
 			case XCB_LEAVE_NOTIFY: {
+				printf("Leave notify event\n");
 				LeaveNotifyEventPtr ev = (LeaveNotifyEventPtr)event;
 				break;
 			}
 			case XCB_KEY_PRESS: {
+				printf("Key press event\n");
 				KeyPressEventPtr ev = (KeyPressEventPtr)event;
 				for (u32 i = 0; i < sizeof(hotkeys); ++i) {
 					if (ev->detail == hotkeys[i].key && ev->state == hotkeys[i].mode) {
@@ -48,6 +63,7 @@ void WindowManager::Run() {
 				break;
 			}
 			case XCB_KEY_RELEASE: {
+				printf("Key press event\n");
 				KeyReleaseEventPtr ev = (KeyReleaseEventPtr)event;
 				break;
 			}
@@ -71,7 +87,9 @@ WindowManager::~WindowManager() {
 }
 
 WindowManager::WindowManager()
-		:_needRestart(false) {
+		:_needRestart(false)
+		,_exit(false)
+		,_layout(std::make_unique<TilingLayout>()) {
 	_connection = xcb_connect(nullptr, nullptr);
 	if (xcb_connection_has_error(_connection)) {
 		throw std::logic_error("Couldn't open display");

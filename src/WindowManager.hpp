@@ -4,13 +4,16 @@ extern "C" {
 #include <xcb/xcb.h>
 }
 
+#include <memory>
+#include "Layouts.hpp"
 #include "types.hpp"
 
 class WindowManager {
 public:
 	static WindowManager& Instance();
-	
-	static void exit() { Instance()._exit = true; }
+
+	static void exit();
+	static void restart();
 
 	void Run();
 	bool NeedRestart() const;
@@ -25,9 +28,12 @@ private:
 
 
 	bool             _needRestart;
-	bool             _exit = false;
+	bool             _exit;
+
+	std::unique_ptr<ILayout> _layout;
 
 	ConnectionPtr     _connection;
 	int               _screenNumber;
 	ScreenPtr         _rootScreen;
+
 };
