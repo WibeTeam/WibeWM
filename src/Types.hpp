@@ -31,6 +31,8 @@ DECLARE_TYPE_AND_PTR(EnterNotifyEvent, xcb_enter_notify_event_t);
 DECLARE_TYPE_AND_PTR(LeaveNotifyEvent, xcb_leave_notify_event_t);
 DECLARE_TYPE_AND_PTR(KeyPressEvent, xcb_key_press_event_t);
 DECLARE_TYPE_AND_PTR(KeyReleaseEvent, xcb_key_release_event_t);
+DECLARE_TYPE_AND_PTR(ConfigureNotifyEvent, xcb_configure_notify_event_t);
+DECLARE_TYPE_AND_PTR(CreateNotifyEvent, xcb_create_notify_event_t);
 
 /* XCB keys types*/
 enum KeyModifier {

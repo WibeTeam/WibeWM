@@ -5,8 +5,9 @@ extern "C" {
 }
 
 #include <memory>
-#include "Layouts.hpp"
 #include "Types.hpp"
+
+class ILayout;
 
 class WindowManager {
 public:

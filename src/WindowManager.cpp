@@ -1,5 +1,6 @@
 #include "WindowManager.hpp"
 #include "config.hpp"
+#include "Layouts.hpp"
 
 #include <stdexcept>
 #include <unistd.h>
@@ -9,6 +10,7 @@ WindowManager& WindowManager::Instance() {
 	static WindowManager instance;
 	return instance;
 }
+
 void WindowManager::quit(const Arg* args) {
 	Instance()._exit = true;
 }
@@ -32,8 +34,20 @@ void WindowManager::Run() {
 	xcb_flush (_connection);
 	while (GenericEventPtr event = xcb_wait_for_event(_connection)) {
 		switch (event->response_type & ~0x80) {
-			case XCB_CREATE_NOTIFY: {
-				printf("Notify created");
+			case XCB_KEY_PRESS: {
+				printf("Key press event\n");
+				KeyPressEventPtr ev = (KeyPressEventPtr)event;
+				for (u32 i = 0; i < sizeof(hotkeys); ++i) {
+					if (ev->detail == hotkeys[i].key && ev->state == hotkeys[i].mode) {
+						hotkeys[i].func(&hotkeys[i].args);
+						break;
+					}
+				}
+				break;
+			}
+			case XCB_KEY_RELEASE: {
+				printf("Key press event\n");
+				KeyReleaseEventPtr ev = (KeyReleaseEventPtr)event;
 				break;
 			}
 			case XCB_BUTTON_PRESS: {
@@ -61,20 +75,19 @@ void WindowManager::Run() {
 				LeaveNotifyEventPtr ev = (LeaveNotifyEventPtr)event;
 				break;
 			}
-			case XCB_KEY_PRESS: {
-				printf("Key press event\n");
-				KeyPressEventPtr ev = (KeyPressEventPtr)event;
-				for (u32 i = 0; i < sizeof(hotkeys); ++i) {
-					if (ev->detail == hotkeys[i].key && ev->state == hotkeys[i].mode) {
-						hotkeys[i].func(&hotkeys[i].args);
-						break;
-					}
-				}
+			case XCB_EXPOSE: {
+				printf("Expose event\n");
+				ExposeEventPtr expose = (ExposeEventPtr)event;
 				break;
 			}
-			case XCB_KEY_RELEASE: {
-				printf("Key press event\n");
-				KeyReleaseEventPtr ev = (KeyReleaseEventPtr)event;
+			case XCB_CREATE_NOTIFY: {
+				printf("Create notify event\n");
+				CreateNotifyEventPtr ev = (CreateNotifyEventPtr)event;
+				break;
+			}
+			case XCB_CONFIGURE_NOTIFY: {
+				printf("Configure notify event\n");
+				ConfigureNotifyEventPtr ev = (ConfigureNotifyEventPtr)event;
 				break;
 			}
 			default:
@@ -107,8 +120,8 @@ WindowManager::WindowManager()
 	_rootScreen = xcb_setup_roots_iterator(xcb_get_setup(_connection)).data;
 	u32 mask = XCB_CW_EVENT_MASK;
 	u32 values[] = { XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY };
+
 	if (xcb_request_check(_connection, xcb_change_window_attributes_checked(_connection, _rootScreen->root, mask, values))) {
-		printf("Another window manager is already running");
-		exit(EXIT_FAILURE);
+		throw std::logic_error("Another window manager is already running");
 	}
 }
