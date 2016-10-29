@@ -11,9 +11,10 @@ extern "C" {
 class WindowManager {
 public:
 	static WindowManager& Instance();
-
-	static void exit();
-	static void restart();
+	
+	static void quit(const Arg* args);
+	static void restart(const Arg* args);
+	static void spawn(const Arg* args);
 
 	void Run();
 	bool NeedRestart() const;

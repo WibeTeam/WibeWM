@@ -137,4 +137,10 @@ enum Key {
 	Delete = 119,
 };
 
-using HotKey = struct { KeyModifier mode; Key key; void (*func)(); };
+using Arg =
+	union {
+		const int i;
+		const void* v;
+	};
+
+using HotKey = struct { KeyModifier mode; Key key; void(*func)(const Arg*); Arg args; };

@@ -2,19 +2,30 @@
 #include "config.hpp"
 
 #include <stdexcept>
+#include <unistd.h>
 
 
 WindowManager& WindowManager::Instance() {
 	static WindowManager instance;
 	return instance;
 }
-void WindowManager::exit() {
+void WindowManager::quit(const Arg* args) {
 	Instance()._exit = true;
 }
 
-void WindowManager::restart() {
+void WindowManager::restart(const Arg* args) {
 	Instance()._needRestart = true;
 	Instance()._exit = true;
+}
+
+void WindowManager::spawn(const Arg* args) {
+	if (fork() == 0) {
+		setsid();
+		execvp(((char**)args->v)[0], (char**)args->v);
+		printf("WindowManager: execvp %s", ((char**)args->v)[0]);
+		perror("failed");
+		exit(EXIT_SUCCESS);
+	}
 }
 
 void WindowManager::Run() {
@@ -56,7 +67,7 @@ void WindowManager::Run() {
 				KeyPressEventPtr ev = (KeyPressEventPtr)event;
 				for (u32 i = 0; i < sizeof(hotkeys); ++i) {
 					if (ev->detail == hotkeys[i].key && ev->state == hotkeys[i].mode) {
-						hotkeys[i].func();
+						hotkeys[i].func(&hotkeys[i].args);
 						break;
 					}
 				}
