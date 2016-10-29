@@ -6,7 +6,7 @@ extern "C" {
 
 #include <memory>
 #include "Layouts.hpp"
-#include "types.hpp"
+#include "Types.hpp"
 
 class WindowManager {
 public:

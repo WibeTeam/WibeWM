@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.hpp"
+
 struct ILayout {
 	virtual ~ILayout() {}
 
