@@ -32,9 +32,8 @@ void WindowManager::Run() {
 	xcb_flush (_connection);
 	while (GenericEventPtr event = xcb_wait_for_event(_connection)) {
 		switch (event->response_type & ~0x80) {
-			case XCB_EXPOSE: {
-				printf("Expose event\n");
-				ExposeEventPtr expose = (ExposeEventPtr) event;
+			case XCB_CREATE_NOTIFY: {
+				printf("Notify created");
 				break;
 			}
 			case XCB_BUTTON_PRESS: {
@@ -107,9 +106,11 @@ WindowManager::WindowManager()
 	}
 	_rootScreen = xcb_setup_roots_iterator(xcb_get_setup(_connection)).data;
 	u32 mask = XCB_CW_EVENT_MASK;
-	u32 values[] = { XCB_EVENT_MASK_EXPOSURE       | XCB_EVENT_MASK_BUTTON_PRESS   |
-	                 XCB_EVENT_MASK_BUTTON_RELEASE | XCB_EVENT_MASK_POINTER_MOTION |
-	                 XCB_EVENT_MASK_ENTER_WINDOW   | XCB_EVENT_MASK_LEAVE_WINDOW   |
-	                 XCB_EVENT_MASK_KEY_PRESS      | XCB_EVENT_MASK_KEY_RELEASE };
-	xcb_change_window_attributes(_connection, _rootScreen->root, mask, values);
+	u32 values[] = { XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY };
+	xcb_generic_error_t* e = xcb_request_check(_connection, xcb_change_window_attributes_checked(_connection, _rootScreen->root, mask, values));
+	if (e != NULL) {
+		xcb_disconnect(_connection);
+		printf("Another window manager is already running");
+		exit(EXIT_FAILURE);
+	}
 }
