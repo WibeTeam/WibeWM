@@ -33,7 +33,14 @@ DECLARE_TYPE_AND_PTR(KeyPressEvent, xcb_key_press_event_t);
 DECLARE_TYPE_AND_PTR(KeyReleaseEvent, xcb_key_release_event_t);
 
 /* XCB keys types*/
-enum KeyModifier { Shift = 1, Lock = 2, Ctrl = 4, Alt = 8 };
+enum KeyModifier {
+	Shift = 1,
+	Lock = 2,
+	Ctrl = 4,
+	Alt = 8,
+	Super = 64
+	};
+
 enum Key {
 	Esc = 9,
 	_1 = 10,
