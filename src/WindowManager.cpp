@@ -1,4 +1,5 @@
 #include "WindowManager.hpp"
+#include "confg.hpp"
 
 #include <stdexcept>
 
@@ -32,9 +33,6 @@ void WindowManager::Run() {
 			}
 			case XCB_BUTTON_PRESS: {
 				ButtonPressEventPtr buttonPress = (ButtonPressEventPtr)event;
-				if (buttonPress->detail == 24) {
-					exitFlag = true;
-				}
 				break;
 			}
 			case XCB_BUTTON_RELEASE: {
@@ -56,10 +54,10 @@ void WindowManager::Run() {
 			case XCB_KEY_PRESS: {
 				KeyPressEventPtr ev = (KeyPressEventPtr)event;
 				printf("KeyPressEvent detail: %d\n", ev->detail);
-				printf("KeyPressEvent state: %d\n", ev->state);
-				if (ev->detail == 54) {
-					exitFlag = true;
-				}
+                printf("KeyPressEvent state: %d\n", ev->state);
+				for (u32 i = 0; i < sizeof(hotkeys) / sizeof(hotkeys[0]); ++i)
+					if (ev->state == hotkeys[i].mode && ev->detail == hotkeys[i].key)
+						hotkeys[i].func();
 				break;
 			}
 			case XCB_KEY_RELEASE: {
@@ -72,9 +70,8 @@ void WindowManager::Run() {
 		}
 		free(event);
 
-		if (exitFlag) {
+		if (_exit)
 			break;
-		}
 	}
 }
 

@@ -32,9 +32,9 @@ DECLARE_TYPE_AND_PTR(LeaveNotifyEvent, xcb_leave_notify_event_t);
 DECLARE_TYPE_AND_PTR(KeyPressEvent, xcb_key_press_event_t);
 DECLARE_TYPE_AND_PTR(KeyReleaseEvent, xcb_key_release_event_t);
 
-
-/* Keyboard */
-enum class Key {
+/* XCB keys types*/
+enum KeyModifier { Shift = 1, Lock = 2, Ctrl = 4, Alt = 8 };
+enum Key {
 	Esc = 9,
 	_1 = 10,
 	_2 = 11,
@@ -63,7 +63,6 @@ enum class Key {
 	BracetLeft = 34,
 	BracketRight = 35,
 	Return = 36,
-	Control_L = 37,
 	a = 38,
 	s = 39,
 	d = 40,
@@ -88,11 +87,8 @@ enum class Key {
 	comma = 59,
 	period = 60,
 	slash = 61,
-	Shift_R = 62,
 	KP_Multiply = 63,
-	Alt_L = 64,
 	Space = 65,
-	Control_L = 66,
 	F1 = 67,
 	F2 = 68,
 	F3 = 69,
@@ -122,7 +118,6 @@ enum class Key {
 	F11 = 95,
 	F12 = 96,
 	KP_Enter = 104,
-	Control_R = 105,
 	KP_Divide = 106,
 	Print = 107,
 	Home = 110,
@@ -135,3 +130,5 @@ enum class Key {
 	Insert = 118,
 	Delete = 119,
 };
+
+using HotKey = struct { KeyModifier mode; Key key; void (*func)(); };

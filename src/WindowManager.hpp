@@ -9,6 +9,8 @@ extern "C" {
 class WindowManager {
 public:
 	static WindowManager& Instance();
+	
+	static void exit() { Instance()._exit = true; }
 
 	void Run();
 	bool NeedRestart() const;
@@ -23,6 +25,7 @@ private:
 
 
 	bool             _needRestart;
+	bool             _exit = false;
 
 	ConnectionPtr     _connection;
 	int               _screenNumber;
