@@ -107,9 +107,7 @@ WindowManager::WindowManager()
 	_rootScreen = xcb_setup_roots_iterator(xcb_get_setup(_connection)).data;
 	u32 mask = XCB_CW_EVENT_MASK;
 	u32 values[] = { XCB_EVENT_MASK_SUBSTRUCTURE_REDIRECT | XCB_EVENT_MASK_SUBSTRUCTURE_NOTIFY };
-	xcb_generic_error_t* e = xcb_request_check(_connection, xcb_change_window_attributes_checked(_connection, _rootScreen->root, mask, values));
-	if (e != NULL) {
-		xcb_disconnect(_connection);
+	if (xcb_request_check(_connection, xcb_change_window_attributes_checked(_connection, _rootScreen->root, mask, values))) {
 		printf("Another window manager is already running");
 		exit(EXIT_FAILURE);
 	}
