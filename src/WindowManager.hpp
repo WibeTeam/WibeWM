@@ -29,5 +29,5 @@ private:
 
 	ConnectionPtr     _connection;
 	int               _screenNumber;
-	ScreenPtr         _screen;
+	ScreenPtr         _rootScreen;
 };

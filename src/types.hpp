@@ -75,7 +75,6 @@ enum Key {
 	semicolon = 47,
 	apostrophe = 48,
 	grave = 49,
-	Shift_L = 50,
 	backslash = 51,
 	z = 52,
 	x = 53,
