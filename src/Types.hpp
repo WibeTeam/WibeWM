@@ -20,7 +20,7 @@ using Name##Ptr = Type*
 /* XCB basic types */
 DECLARE_TYPE_AND_PTR(Connection, xcb_connection_t);
 DECLARE_TYPE_AND_PTR(Screen, xcb_screen_t);
-DECLARE_TYPE_AND_PTR(Window, xcb_window_t)
+DECLARE_TYPE_AND_PTR(Window, xcb_window_t);
 
 /* XCB event types */
 DECLARE_TYPE_AND_PTR(GenericEvent, xcb_generic_event_t);
