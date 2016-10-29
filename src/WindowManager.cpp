@@ -21,8 +21,6 @@ void WindowManager::Run() {
                                   XCB_EVENT_MASK_KEY_PRESS      | XCB_EVENT_MASK_KEY_RELEASE };
 	xcb_change_window_attributes(_connection, _screen->root, mask, values);
 
-	bool exitFlag = false;
-
 	xcb_flush (_connection);
 	while (GenericEventPtr event = xcb_wait_for_event(_connection)) {
 		printf("event type: %x\n", event->response_type);
