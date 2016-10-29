@@ -11,28 +11,14 @@ WindowManager& WindowManager::Instance() {
 void WindowManager::Run() {
 
         /* Create the window */
-        xcb_window_t window    = xcb_generate_id (_connection);
+        //xcb_window_t window    = xcb_generate_id (_connection);
 
         uint32_t     mask      = XCB_CW_EVENT_MASK;
         uint32_t     values[] = { XCB_EVENT_MASK_EXPOSURE       | XCB_EVENT_MASK_BUTTON_PRESS   |
                                   XCB_EVENT_MASK_BUTTON_RELEASE | XCB_EVENT_MASK_POINTER_MOTION |
                                   XCB_EVENT_MASK_ENTER_WINDOW   | XCB_EVENT_MASK_LEAVE_WINDOW   |
                                   XCB_EVENT_MASK_KEY_PRESS      | XCB_EVENT_MASK_KEY_RELEASE };
-
-        xcb_create_window (_connection,
-                           0,                             /* depth               */
-                           window,
-                           _screen->root,                  /* parent window       */
-                           0, 0,                          /* x, y                */
-                           150, 150,                      /* width, height       */
-                           10,                            /* border_width        */
-                           XCB_WINDOW_CLASS_INPUT_OUTPUT, /* class               */
-                           _screen->root_visual,           /* visual              */
-                           mask, values );                /* masks */
-
-        /* Map the window on the screen */
-        xcb_map_window (_connection, window);
-
+	xcb_change_window_attributes(_connection, _screen->root, mask, values);
 
 	bool exitFlag = false;
 
@@ -71,11 +57,8 @@ void WindowManager::Run() {
 				KeyPressEventPtr ev = (KeyPressEventPtr)event;
 				printf("KeyPressEvent detail: %d\n", ev->detail);
 				printf("KeyPressEvent state: %d\n", ev->state);
-				if (ev->detail == 24) {
-					exitFlag = false;
-				}
-				if (ev->detail == 99) {
-					exitFlag = false;
+				if (ev->detail == 54) {
+					exitFlag = true;
 				}
 				break;
 			}
@@ -89,8 +72,9 @@ void WindowManager::Run() {
 		}
 		free(event);
 
-		if (exitFlag)
+		if (exitFlag) {
 			break;
+		}
 	}
 }
 
@@ -103,7 +87,7 @@ WindowManager::~WindowManager() {
 }
 
 WindowManager::WindowManager()
-		:_needRestart(true) {
+		:_needRestart(false) {
 	_connection = xcb_connect(nullptr, nullptr);
 	if (xcb_connection_has_error(_connection)) {
 		throw std::logic_error("Couldn't open display");
