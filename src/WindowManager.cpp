@@ -54,8 +54,10 @@ void WindowManager::Run() {
 				printf("KeyPressEvent detail: %d\n", ev->detail);
                 printf("KeyPressEvent state: %d\n", ev->state);
 				for (u32 i = 0; i < sizeof(hotkeys) / sizeof(hotkeys[0]); ++i)
-					if (ev->state == hotkeys[i].mode && ev->detail == hotkeys[i].key)
+					if (ev->state == hotkeys[i].mode && ev->detail == hotkeys[i].key) {
 						hotkeys[i].func();
+						break;
+					}
 				break;
 			}
 			case XCB_KEY_RELEASE: {
