@@ -74,4 +74,6 @@ Thumbs.db
 
 # Ignore build dir
 build
+#ignore clion
+.idea
 
