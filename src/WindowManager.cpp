@@ -1,5 +1,5 @@
 #include "WindowManager.hpp"
-#include "confg.hpp"
+#include "config.hpp"
 
 #include <stdexcept>
 
