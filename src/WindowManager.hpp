@@ -1,23 +1,30 @@
 #pragma once
 
+extern "C" {
 #include <xcb/xcb.h>
+}
 
+#include "types.hpp"
 
 class WindowManager {
 public:
-	static const WindowManager& Instance();
+	static WindowManager& Instance();
 
-	xcb_connection_t* GetConnection();
+	void Run();
+	bool NeedRestart() const;
 
 	~WindowManager();
 
-private:        
+private:
 	WindowManager();
 	WindowManager(const WindowManager& other) = delete;
 	WindowManager(const WindowManager&& other) = delete;
 	WindowManager& operator=(const WindowManager&) = delete;
 
 
-	xcb_connection_t* _connection;
-	xcb_screen_t*     _screen;
+	bool             _needRestart;
+
+	ConnectionPtr     _connection;
+	int               _screenNumber;
+	ScreenPtr         _screen;
 };
