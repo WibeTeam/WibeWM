@@ -48,6 +48,47 @@ Fnt* Drw::Create(const char* fontname, FcPattern* fontpattern) {
 	return new Fnt(display, (int)(xftFont->ascent + xftFont->descent), xftFont, pattern);
 }
 
+void Drw::Create(XftColor* dest, const char* color) {
+ 	if (!dest || !color)
+		return;
+
+	if (!XftColorAllocName(display, DefaultVisual(display, screen),
+	                       DefaultColormap(display, screen),
+	                       color, dest))
+		exit(-2);
+}
+
+XftColor* Drw::Create(const char* clrnames[], size_t clrcount) {
+	size_t i;
+	XftColor* ret = (XftColor*)calloc(clrcount, sizeof(XftColor));
+
+	if (!clrnames || clrcount < 2 || !ret)
+		return nullptr;
+
+	for (i = 0; i < clrcount; i++)
+		Create(&ret[i], clrnames[i]);
+	return ret;
+}
+
+Cur* Drw::CreateCursor(int shape) {
+	Cur* cur = (Cur*)calloc(1, sizeof(Cur));
+	if (!cur)
+		return nullptr;
+
+	cur->cursor = XCreateFontCursor(display, shape);
+
+	return cur;
+}
+
+void Drw::DestroyCursor(Cur* cursor) {
+	if (!cursor)
+		return;
+
+	XFreeCursor(display, cursor->cursor);
+	free(cursor);
+
+}
+
 
 Drw::Drw(Display* disp, int scr, Window win, unsigned w, unsigned h) :
 		width(w),

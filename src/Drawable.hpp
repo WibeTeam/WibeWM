@@ -13,6 +13,10 @@ extern "C" {
 
 struct Drw;
 
+struct Cur {
+	Cursor cursor;
+};
+
 struct Fnt {
 	Display*   display;
 	unsigned   height;
@@ -37,6 +41,10 @@ struct Drw {
 	std::forward_list<Fnt*> fonts;
 
 	Fnt* Create(const char* fontname, FcPattern* fontpattern);
+	void Create(XftColor* dest, const char* color);
+	XftColor* Create(const char* clrnames[], size_t clrcount);
+	Cur* CreateCursor(int shape);
+	void DestroyCursor(Cur* cursor);
 
 	Drw(Display* disp, int scr, Window win, unsigned w, unsigned h);
 	~Drw();
