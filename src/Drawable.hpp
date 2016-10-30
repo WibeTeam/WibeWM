@@ -7,7 +7,7 @@ extern "C" {
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <bits/forward_list.h>
+#include <forward_list>
 
 #include "Types.hpp"
 
@@ -15,7 +15,7 @@ struct Drw;
 
 struct Fnt {
 	Display*   display;
-	unsigned  height;
+	unsigned   height;
 	XftFont*   xfont;
 	FcPattern* pattern;
 
