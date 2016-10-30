@@ -21,18 +21,19 @@ struct Fnt {
 
 	Fnt(Display* disp, unsigned h, XftFont* font, FcPattern* pattern);
 	~Fnt();
+
+	void GetExts(const char* text, unsigned len, unsigned* w, unsigned* h);
 };
 
 struct Drw {
-	unsigned      width;
-	unsigned      height;
-	Display*       display;
-	int            screen;
-	Window         root;
-	Drawable       drawable;
-	GC             gc;
-	XftColor*      scheme;
-	Fnt*           fonts;
+	unsigned                width;
+	unsigned                height;
+	Display*                display;
+	int                     screen;
+	Window                  root;
+	Drawable                drawable;
+	GC                      gc;
+	XftColor*               scheme;
 	std::forward_list<Fnt*> fonts;
 
 	Fnt* Create(const char* fontname, FcPattern* fontpattern);
@@ -42,5 +43,8 @@ struct Drw {
 
 	void Resize(unsigned width, unsigned height);
 	unsigned GetWidth(const char* text);
-	int Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char* text, bool invert)
+	void Rect(int x, int y, unsigned w, unsigned h, int filled, bool invert);
+	int Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char* text, bool invert);
+
+	void Map(Window win, int x, int y, unsigned w, unsigned h);
 };

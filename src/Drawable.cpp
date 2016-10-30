@@ -14,6 +14,19 @@ Fnt::~Fnt() {
 	XftFontClose(display, xfont);
 }
 
+void Fnt::GetExts(const char* text, unsigned len, unsigned* w, unsigned* h) {
+	if (!text)
+		return;
+
+	XGlyphInfo ext;
+
+	XftTextExtentsUtf8(display, xfont, (XftChar8 *)text, len, &ext);
+	if (w)
+		*w = ext.xOff;
+	if (h)
+		*h = height;
+}
+
 Fnt* Drw::Create(const char* fontname, FcPattern* fontpattern) {
 	XftFont* xftFont = nullptr;
 	FcPattern* pattern = nullptr;
@@ -59,8 +72,21 @@ void Drw::Resize(uint width, uint height) {
 }
 
 unsigned Drw::GetWidth(const char* text) {
-	if (!fonts || !text)
-	return 0;
+	if (fonts.empty() || !text)
+		return 0;
+	return Text(0, 0, 0, 0, 0, text, false);
+}
+
+void Drw::Rect(int x, int y, unsigned w, unsigned h, int filled, bool invert) {
+	if (!scheme)
+		return;
+	XSetForeground(display, gc, scheme[invert ? (int)SchemeIndex::Background
+	                                          : (int)SchemeIndex::Foreground].pixel);
+	if (!filled) {
+		--w;
+		--h;
+	}
+	XDrawRectangle(display, drawable, gc, x, y, w - 1, h - 1);
 }
 
 int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *text, bool invert) {
@@ -190,5 +216,10 @@ int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *t
 		XftDrawDestroy(d);
 
 	return x + (render ? w : 0);
+}
+
+void Drw::Map(Window win, int x, int y, unsigned w, unsigned h) {
+	XCopyArea(display, drawable, win, gc, x, y, w, h, x, y);
+	XSync(display, False);
 }
 
