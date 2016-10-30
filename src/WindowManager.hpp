@@ -35,18 +35,19 @@ private:
 
 	void UpdateBars();
     void UpdateStatus();
+    void DrawBar();
 
-	static std::shared_ptr<WindowManager> _self;
+	static std::shared_ptr<WindowManager>  _self;
 
 	Display*                               _display;
 	int                                    _screen;
-	const Window                          _root;
-	XRectangle                             _rootRect;
+	const Window                           _root;
+    Rectangle                              _rootRect;
 	std::forward_list<Monitor*>            _monitors;
 	Atom                                   _wmatom[(int)WM::Size];
 	Atom                                   _netatom[(int)Net::Size];
 	Cur*                                   _cursor[(int)CursorState::Size];
 	XftColor*                              _scheme[(int)ColorScheme::Size];
-	bool                                  _needRestart;
-	bool                                  _exit;
+	bool                                   _needRestart;
+	bool                                   _exit;
 };

@@ -4,7 +4,8 @@
 #include "Client.hpp"
 #include "Layouts.hpp"
 
-struct Monitor {
+class Monitor {
+public:
 	Monitor::Monitor(const std::forward_list<Tag>& tags)
 			:_tags(tags)
 	{ }
@@ -18,8 +19,8 @@ struct Monitor {
 
 	bool   BarAtTop;
 	int    BarHeight;
-	XRectangle WindowRect;
-	XRectangle ScreenRect;
+	Rectangle WindowRect;
+	Rectangle ScreenRect;
 
 	Window Bar;
 

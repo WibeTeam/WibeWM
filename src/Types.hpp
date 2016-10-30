@@ -161,7 +161,8 @@ enum class Net : int {
 	WMWindowType,
 	WMWindowTypeDialog,
 	ClientList,
-	Size
+	Size,
+	Last
 };
 
 enum class WM : int {
@@ -180,4 +181,14 @@ enum class Click : int {
 	ClientWin,
 	RootWin,
 	Size
+};
+
+struct Rectangle {
+	int x, y;
+	unsigned width, height;
+	Rectangle(int x, int y, unsigned width, unsigned height):
+		x{x}, y{y},
+        width{width},
+        height{height}
+	{}
 };

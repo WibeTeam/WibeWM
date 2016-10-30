@@ -50,7 +50,7 @@ WindowManager::WindowManager(Display* display) :
 		_display(display),
 		_screen(DefaultScreen(_display)),
 		_root(DefaultRootWindow(_display)),
-		_rootRect({0, 0, DisplayWidth(_display, _screen), DisplayWidth(_display, _screen)}),
+		_rootRect{0, 0, DisplayWidth(_display, _screen), DisplayWidth(_display, _screen)},
 		_needRestart(false),
 		_exit(false) {
 	_wmatom[(int)WM::Protocols] = XInternAtom(_display, "WM_PROTOCOLS", False);
@@ -65,6 +65,9 @@ WindowManager::WindowManager(Display* display) :
 	_netatom[(int)Net::WMWindowType] = XInternAtom(_display, "_NET_WM_WINDOW_TYPE", False);
 	_netatom[(int)Net::WMWindowTypeDialog] = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	_netatom[(int)Net::ClientList] = XInternAtom(_display, "_NET_CLIENT_LIST", False);
+    UpdateBars();
+    UpdateStatus();
+    XChangeProperty(_display, _root, _netatom[(int)Net::Supported], (Atom)4, 32, PropModeReplace, (unsigned char*)_netatom, (int)Net::Last);
 }
 
 void WindowManager::UpdateBars() {
@@ -88,5 +91,10 @@ void WindowManager::UpdateBars() {
 }
 
 void WindowManager::UpdateStatus() {
+    DrawBar();
+}
 
+void WindowManager::DrawBar() {
+    /* TODO PLS */
+    return;
 }
