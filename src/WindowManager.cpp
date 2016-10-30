@@ -65,3 +65,16 @@ WindowManager::WindowManager(Display* display) :
 	_netatom[(int)Net::WMWindowTypeDialog] = XInternAtom(_display, "_NET_WM_WINDOW_TYPE_DIALOG", False);
 	_netatom[(int)Net::ClientList] = XInternAtom(_display, "_NET_CLIENT_LIST", False);
 }
+
+void WindowManager::UpdateBars() {
+	XSetWindowAttributes wa = {
+		.override_redirect = True,
+		.background_pixmap = ParentRelative,
+		.event_mask = ButtonPressMask|ExposureMask
+	};
+	for (auto& monitor : _monitors) {
+		if (monitor) {
+			monitor->
+		}
+	}
+}

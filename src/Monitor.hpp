@@ -4,24 +4,26 @@
 #include "Client.hpp"
 #include "Layouts.hpp"
 
-
-class Monitor {
-public:
+struct Monitor {
 	Monitor::Monitor(const std::forward_list<Tag>& tags)
 			:_tags(tags)
 	{ }
 
-private:
-	bool _showBar;
-	bool _barAtTop;
-	int barHeight;
+	std::string ltsymbol;
 
-	Rectangle _windowRect;
-	Rectangle _screenRect;
+	double MasterAreaFactor;
+	int    WindowInMasterArea;
+	bool   BarVisible;
+	int  num;
 
-	Window _bar;
+	bool   BarAtTop;
+	int    BarHeight;
+	XRectangle WindowRect;
+	XRectangle ScreenRect;
 
-	std::forward_list<Tag>& _tags;
+	Window Bar;
+
+	std::forward_list<Tag> Tags;
 
 	unique_ptr<ILayout> _layout;
 };

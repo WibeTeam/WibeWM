@@ -13,6 +13,8 @@ using s16 = int16_t;
 using s32 = int32_t;
 using s64 = int64_t;
 
+using uint = unsigned;
+
 enum KeyModifier {
 	Shift = 1,
 	Lock = 2,
@@ -135,13 +137,13 @@ enum class CursorState : int {
 	Normal,
 	Resize,
 	Move,
-	Last
+	Size
 };
 
 enum class ColorScheme : int {
 	Normal,
 	Selected,
-	Last
+	Size
 };
 
 enum class Net : int {
@@ -153,7 +155,7 @@ enum class Net : int {
 	WMWindowType,
 	WMWindowTypeDialog,
 	ClientList,
-	Last
+	Size
 };
 
 enum class WM : int {
@@ -161,7 +163,7 @@ enum class WM : int {
 	Delete,
 	State,
 	TakeFocus,
-	Last
+	Size
 };
 
 enum class Click : int {
@@ -171,5 +173,5 @@ enum class Click : int {
 	WinTitle,
 	ClientWin,
 	RootWin,
-	Last
+	Size
 };
