@@ -7,6 +7,7 @@ extern "C" {
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <bits/forward_list.h>
 
 #include "Types.hpp"
 
@@ -18,11 +19,8 @@ struct Fnt {
 	XftFont*   xfont;
 	FcPattern* pattern;
 
-
 	Fnt(Display* disp, unsigned h, XftFont* font, FcPattern* pattern);
 	~Fnt();
-
-	unsigned GetWidth(const char* text);
 };
 
 struct Drw {
@@ -35,6 +33,7 @@ struct Drw {
 	GC             gc;
 	XftColor*      scheme;
 	Fnt*           fonts;
+	std::forward_list<Fnt*> fonts;
 
 	Fnt* Create(const char* fontname, FcPattern* fontpattern);
 
@@ -42,4 +41,6 @@ struct Drw {
 	~Drw();
 
 	void Resize(unsigned width, unsigned height);
+	unsigned GetWidth(const char* text);
+	int Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char* text, bool invert)
 };

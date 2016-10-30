@@ -146,6 +146,12 @@ enum class ColorScheme : int {
 	Size
 };
 
+enum class SchemeIndex : int {
+	Foreground,
+	Background,
+	Size
+};
+
 enum class Net : int {
 	Supported,
 	WMName,
