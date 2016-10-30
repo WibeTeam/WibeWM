@@ -1,6 +1,57 @@
 #include "Drawable.hpp"
 #include <algorithm>
 
+#define UTF_SIZ     4
+static const long InvalidUTF = 0xFFFD;
+static const unsigned char utfbyte[UTF_SIZ + 1] = {0x80,    0, 0xC0, 0xE0, 0xF0};
+static const unsigned char utfmask[UTF_SIZ + 1] = {0xC0, 0x80, 0xE0, 0xF0, 0xF8};
+static const long utfmin[UTF_SIZ + 1] = {       0,    0,  0x80,  0x800,  0x10000};
+static const long utfmax[UTF_SIZ + 1] = {0x10FFFF, 0x7F, 0x7FF, 0xFFFF, 0x10FFFF};
+
+static long
+utf8decodebyte(const char c, size_t *i)
+{
+	for (*i = 0; *i < (UTF_SIZ + 1); ++(*i))
+		if (((unsigned char)c & utfmask[*i]) == utfbyte[*i])
+			return (unsigned char)c & ~utfmask[*i];
+	return 0;
+}
+
+static size_t
+utf8validate(long *u, size_t i)
+{
+	if (!(utfmin[i] <= *u && *u <= utfmax[i]) || (0xD800 <= *u && *u <= 0xDFFF))
+		*u = InvalidUTF;
+	for (i = 1; *u > utfmax[i]; ++i)
+		;
+	return i;
+}
+
+static size_t
+utf8decode(const char *c, long *u, size_t clen)
+{
+	size_t i, j, len, type;
+	long udecoded;
+
+	*u = InvalidUTF;
+	if (!clen)
+		return 0;
+	udecoded = utf8decodebyte(c[0], &len);
+	if (!(1 <= len && len <= UTF_SIZ))
+		return 1;
+	for (i = 1, j = 1; i < clen && j < len; ++i, ++j) {
+		udecoded = (udecoded << 6) | utf8decodebyte(c[i], &type);
+		if (type)
+			return j;
+	}
+	if (j < len)
+		return 0;
+	*u = udecoded;
+	utf8validate(u, len);
+
+	return len;
+}
+
 Fnt::Fnt(Display* disp, unsigned h, XftFont* font, FcPattern* pattern) :
 		display(disp),
 		height(h),
@@ -177,7 +228,6 @@ int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *t
 					}
 					break;
 				}
-
 			}
 
 			if (!charexists || nextfont)
@@ -188,7 +238,7 @@ int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *t
 
 		if (utf8strlen) {
 			usedFont->GetExts(utf8str, utf8strlen, &ew, nullptr);
-			for (len = std::min(utf8strlen, sizeof(buf) - 1); len && ew > w; len--)
+			for (len = std::min((s64)utf8strlen, (s64)(sizeof(buf) - 1)); len && ew > w; len--)
 				usedFont->GetExts(utf8str, len, &ew, nullptr);
 
 			if (len) {
