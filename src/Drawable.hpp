@@ -7,7 +7,7 @@ extern "C" {
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <forward_list>
+#include <list>
 
 #include "Types.hpp"
 
@@ -38,7 +38,7 @@ struct Drw {
 	Drawable                drawable;
 	GC                      gc;
 	XftColor*               scheme;
-	std::forward_list<Fnt*> fonts;
+	std::list<Fnt*>         fonts;
 
 	Fnt* Create(const char* fontname, FcPattern* fontpattern);
 	void Create(XftColor* dest, const char* color);

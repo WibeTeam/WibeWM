@@ -134,8 +134,7 @@ int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *t
 	char buf[1024];
 	int ty;
 	unsigned int ew;
-	XftDraw *d = NULL;
-	Fnt *usedfont, *curfont, *nextfont;
+	XftDraw *d = nullptr;
 	size_t i, len;
 	int utf8strlen, utf8charlen, render = x || y || w || h;
 	long utf8codepoint = 0;
@@ -144,68 +143,65 @@ int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *t
 	FcPattern *fcpattern;
 	FcPattern *match;
 	XftResult result;
-	int charexists = 0;
 
-	if ((render && !scheme) || !text || !fonts)
+	if ((render && !scheme) || !text || fonts.empty())
 		return 0;
 
 	if (!render) {
 		w = ~w;
 	} else {
-		XSetForeground(display, gc, scheme[invert ?
-		                                   (int)SchemeIndex::Foreground :
-		                                   (int)SchemeIndex::Background].pixel);
+		XSetForeground(display, gc, scheme[invert ? (int)SchemeIndex::Foreground : (int)SchemeIndex::Background].pixel);
 		XFillRectangle(display, drawable, gc, x, y, w, h);
 		d = XftDrawCreate(display, drawable, DefaultVisual(display, screen), DefaultColormap(display, screen));
 		x += lpad;
 		w -= lpad;
 	}
 
-	usedfont = fonts;
+	Fnt* usedFont = fonts.front();
+	Fnt *nextfont;
+	bool charexists = 0;
 	while (1) {
 		utf8strlen = 0;
 		utf8str = text;
 		nextfont = nullptr;
 		while (*text) {
 			utf8charlen = utf8decode(text, &utf8codepoint, 4);
-			for (curfont = fonts; curfont; curfont = curfont->next) {
-				charexists = charexists || XftCharExists(display, curfont->xfont, utf8codepoint);
+			for (auto currentFont = fonts.begin(); currentFont != fonts.end(); ++currentFont) {
+				charexists = charexists || XftCharExists(display, (*currentFont)->xfont, utf8codepoint);
 				if (charexists) {
-					if (curfont == usedfont) {
+					if (*currentFont == usedFont) {
 						utf8strlen += utf8charlen;
 						text += utf8charlen;
 					} else {
-						nextfont = curfont;
+						nextfont = *currentFont;
 					}
 					break;
 				}
+
 			}
 
 			if (!charexists || nextfont)
 				break;
 			else
-				charexists = 0;
+				charexists = false;
 		}
 
 		if (utf8strlen) {
-			drw_font_getexts(usedfont, utf8str, utf8strlen, &ew, NULL);
-			/* shorten text if necessary */
+			usedFont->GetExts(utf8str, utf8strlen, &ew, nullptr);
 			for (len = std::min(utf8strlen, sizeof(buf) - 1); len && ew > w; len--)
-				drw_font_getexts(usedfont, utf8str, len, &ew, NULL);
+				usedFont->GetExts(utf8str, len, &ew, nullptr);
 
 			if (len) {
 				memcpy(buf, utf8str, len);
 				buf[len] = '\0';
-				if (len < utf8strlen)
-					for (i = len; i && i > len - 3; buf[--i] = '.')
-						; /* NOP */
+				if (len < utf8strlen) {
+					for (i = len; i && i > len - 3; buf[--i] = '.');
+				}
 
 				if (render) {
-					ty = y + (h - usedfont->height) / 2 + usedfont->xfont->ascent;
-					XftDrawStringUtf8(d, &scheme[invert ?
-		                                  (int)SchemeIndex::Foreground :
-		                                  (int)SchemeIndex::Background],
-					                  usedfont->xfont, x, ty, (XftChar8 *)buf, len);
+					ty = y + (h - usedFont->height) / 2 + usedFont->xfont->ascent;
+					XftDrawStringUtf8(d, &scheme[invert ? (int)SchemeIndex::Foreground : (int)SchemeIndex::Background],
+					                  usedFont->xfont, x, ty, (XftChar8 *)buf, len);
 				}
 				x += ew;
 				w -= ew;
@@ -215,40 +211,35 @@ int Drw::Text(int x, int y, unsigned w, unsigned h, unsigned lpad, const char *t
 		if (!*text) {
 			break;
 		} else if (nextfont) {
-			charexists = 0;
-			usedfont = nextfont;
+			charexists = false;
+			usedFont = nextfont;
 		} else {
-			/* Regardless of whether or not a fallback font is found, the
-			 * character must be drawn. */
-			charexists = 1;
+			charexists = true;
 
 			fccharset = FcCharSetCreate();
 			FcCharSetAddChar(fccharset, utf8codepoint);
 
-			if (!fonts->pattern) {
+			if (fonts.front()->pattern) {
 				exit(-2);
 			}
 
-			fcpattern = FcPatternDuplicate(drw->fonts->pattern);
+			fcpattern = FcPatternDuplicate(fonts.front()->pattern);
 			FcPatternAddCharSet(fcpattern, FC_CHARSET, fccharset);
 			FcPatternAddBool(fcpattern, FC_SCALABLE, FcTrue);
 
-			FcConfigSubstitute(NULL, fcpattern, FcMatchPattern);
+			FcConfigSubstitute(nullptr, fcpattern, FcMatchPattern);
 			FcDefaultSubstitute(fcpattern);
-			match = XftFontMatch(drw->dpy, drw->screen, fcpattern, &result);
+			match = XftFontMatch(display, screen, fcpattern, &result);
 
 			FcCharSetDestroy(fccharset);
 			FcPatternDestroy(fcpattern);
 
 			if (match) {
-				usedfont = xfont_create(drw, NULL, match);
-				if (usedfont && XftCharExists(drw->dpy, usedfont->xfont, utf8codepoint)) {
-					for (curfont = drw->fonts; curfont->next; curfont = curfont->next)
-						; /* NOP */
-					curfont->next = usedfont;
+				usedFont = Create(nullptr, match);
+				if (usedFont && XftCharExists(display, usedFont->xfont, utf8codepoint)) {
+					fonts.push_back(usedFont);
 				} else {
-					xfont_free(usedfont);
-					usedfont = drw->fonts;
+					usedFont = fonts.front();
 				}
 			}
 		}
