@@ -7,7 +7,6 @@ extern "C" {
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <tkDecls.h>
 
 #include "Types.hpp"
 
