@@ -34,6 +34,7 @@ private:
 	WindowManager& operator=(const WindowManager&) = delete;
 
 	void UpdateBars();
+    void UpdateStatus();
 
 	static std::shared_ptr<WindowManager> _self;
 
@@ -44,7 +45,7 @@ private:
 	std::forward_list<Monitor*>            _monitors;
 	Atom                                   _wmatom[(int)WM::Size];
 	Atom                                   _netatom[(int)Net::Size];
-	Cursor*                                _cursor[(int)CursorState::Size];
+	Cur*                                   _cursor[(int)CursorState::Size];
 	XftColor*                              _scheme[(int)ColorScheme::Size];
 	bool                                  _needRestart;
 	bool                                  _exit;

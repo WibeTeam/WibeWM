@@ -1,6 +1,7 @@
 #include "WindowManager.hpp"
 
 #include <unistd.h>
+#include <X11/Xlib.h>
 
 std::shared_ptr<WindowManager> WindowManager::_self = nullptr;
 
@@ -72,9 +73,20 @@ void WindowManager::UpdateBars() {
 		.background_pixmap = ParentRelative,
 		.event_mask = ButtonPressMask|ExposureMask
 	};
+    Drw drawable{_display, _screen, _root, _rootRect.width, _rootRect.height};
 	for (auto& monitor : _monitors) {
-		if (monitor) {
-			monitor->
+		if (monitor && !monitor->Bar) {
+			monitor->Bar = XCreateWindow(_display, _root, monitor->ScreenRect.x, monitor->ScreenRect.y,
+                                         drawable.fonts.front()->height, monitor->ScreenRect.width, 0,
+                                         DefaultDepth(_display, _screen), CopyFromParent, DefaultVisual(_display, _screen),
+                                         (CWOverrideRedirect|CWBackPixmap|CWEventMask), &wa);
+            XDefineCursor(_display, monitor->Bar, _cursor[(int)CursorState::Normal]->cursor);
+            XMapRaised(_display, monitor->Bar);
 		}
 	}
+
+}
+
+void WindowManager::UpdateStatus() {
+
 }
