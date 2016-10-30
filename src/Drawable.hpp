@@ -10,26 +10,36 @@ extern "C" {
 
 #include "Types.hpp"
 
+struct Drw;
+
 struct Fnt {
-	Display*   Display;
-	uint       Height;
-	XftFont*   Xfont;
-	FcPattern* Pattern;
+	Display*   display;
+	unsigned  height;
+	XftFont*   xfont;
+	FcPattern* pattern;
+
+
+	Fnt(Display* disp, unsigned h, XftFont* font, FcPattern* pattern);
+	~Fnt();
+
+	unsigned GetWidth(const char* text);
 };
 
 struct Drw {
-	uint      Width;
-	uint      Height;
-	Display*  Display;
-	int       Screen;
-	Window    Root;
-	Drawable  drawable;
-	GC        Gc;
-	XftColor* Scheme;
-	Fnt*      Fonts;
+	unsigned      width;
+	unsigned      height;
+	Display*       display;
+	int            screen;
+	Window         root;
+	Drawable       drawable;
+	GC             gc;
+	XftColor*      scheme;
+	Fnt*           fonts;
 
-	Drw(Display* display, int screen, Window window, uint width, uint height);
+	Fnt* Create(const char* fontname, FcPattern* fontpattern);
+
+	Drw(Display* disp, int scr, Window win, unsigned w, unsigned h);
 	~Drw();
-	void Resize(uint width, uint height);
 
+	void Resize(unsigned width, unsigned height);
 };
