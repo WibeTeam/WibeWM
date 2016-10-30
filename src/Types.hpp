@@ -13,11 +13,6 @@ using s16 = int16_t;
 using s32 = int32_t;
 using s64 = int64_t;
 
-#define DECLARE_TYPE_AND_PTR(Name, Type) \
-using Name = Type; \
-using Name##Ptr = Type*
-
-
 enum KeyModifier {
 	Shift = 1,
 	Lock = 2,
@@ -122,10 +117,14 @@ enum Key {
 	Delete = 119,
 };
 
-using Arg =
-	union {
-		const int i;
-		const void* v;
-	};
+union Arg {
+	const int i;
+	const void* v;
+};
 
-using HotKey = struct { KeyModifier mode; Key key; void(*func)(const Arg*); Arg args; };
+struct HotKey {
+	KeyModifier mode;
+	Key key;
+	void(*func)(const Arg*);
+	Arg args;
+};

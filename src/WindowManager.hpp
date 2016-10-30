@@ -7,8 +7,6 @@ extern "C" {
 #include <memory>
 #include "Types.hpp"
 
-class ILayout;
-
 class WindowManager {
 public:
 	static std::shared_ptr<WindowManager> Instance();
@@ -30,6 +28,10 @@ private:
 
 	static std::shared_ptr<WindowManager> _self;
 
-	bool                          _needRestart;
-	bool                          _exit;
+	Display*                               _display;
+	int                                    _screen;
+	const Window                          _root;
+	XRectangle                             _rootRect;
+	bool                                  _needRestart;
+	bool                                  _exit;
 };

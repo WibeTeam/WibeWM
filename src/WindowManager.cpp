@@ -1,8 +1,5 @@
 #include "WindowManager.hpp"
-#include "config.hpp"
-#include "Layouts.hpp"
 
-#include <stdexcept>
 #include <unistd.h>
 
 std::shared_ptr<WindowManager> WindowManager::_self = nullptr;
@@ -37,6 +34,7 @@ void WindowManager::spawn(const Arg* args) {
 }
 
 void WindowManager::Run() {
+
 }
 
 bool WindowManager::NeedRestart() const {
@@ -44,10 +42,14 @@ bool WindowManager::NeedRestart() const {
 }
 
 WindowManager::~WindowManager() {
+	XCloseDisplay(_display);
 }
 
-WindowManager::WindowManager(Display* display)
-		:_needRestart(false)
-		,_exit(false) {
-
+WindowManager::WindowManager(Display* display) :
+		_display(display),
+		_screen(DefaultScreen(_display)),
+		_root(DefaultRootWindow(_display)),
+		_rootRect({0, 0, DisplayWidth(_display, _screen), DisplayWidth(_display, _screen)}),
+		_needRestart(false),
+		_exit(false) {
 }
