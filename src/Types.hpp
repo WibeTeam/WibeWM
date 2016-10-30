@@ -128,3 +128,48 @@ struct HotKey {
 	void(*func)(const Arg*);
 	Arg args;
 };
+
+
+/* enums */
+enum class CursorState : int {
+	Normal,
+	Resize,
+	Move,
+	Last
+};
+
+enum class ColorScheme : int {
+	Normal,
+	Selected,
+	Last
+};
+
+enum class Net : int {
+	Supported,
+	WMName,
+	WMState,
+	WMFullscreen,
+	ActiveWindow,
+	WMWindowType,
+	WMWindowTypeDialog,
+	ClientList,
+	Last
+};
+
+enum class WM : int {
+	Protocols,
+	Delete,
+	State,
+	TakeFocus,
+	Last
+};
+
+enum class Click : int {
+	TagBar,
+	LtSymbol,
+	StatusText,
+	WinTitle,
+	ClientWin,
+	RootWin,
+	Last
+};

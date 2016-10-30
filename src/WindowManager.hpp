@@ -32,6 +32,8 @@ private:
 	int                                    _screen;
 	const Window                          _root;
 	XRectangle                             _rootRect;
+	Atom                                   _wmatom[(int)WM::Last];
+	Atom                                   _netatom[(int)Net::Last];
 	bool                                  _needRestart;
 	bool                                  _exit;
 };
